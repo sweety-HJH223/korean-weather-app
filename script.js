@@ -705,22 +705,22 @@ document.getElementById('geoBtn').onclick = () => {
 };
 // --- SHARE WEATHER ---
 document.getElementById('shareBtn').onclick = async () => {
-    const city = document.getElementById('cityName').innerHTML = `<i class="fas fa-location-arrow"></i> ${location.name}, ${location.country}`;
+    const city = document.getElementById('cityName').innerText.replace(/^\s*\S+\s*/, '').trim();
     const temp = document.getElementById('temp').innerText;
     const desc = document.getElementById('description').innerText;
     const feel = document.getElementById('realFeelVal').innerText;
     const humidity = document.getElementById('humidityVal').innerText;
     const wind = document.getElementById('windVal').innerText;
 
-    const shareText = `🌤️ Weather in ${city}\n🌡️ ${temp} — ${desc}\n🤔 Feels like: ${feel}\n💧 Humidity: ${humidity}\n💨 Wind: ${wind}\n\nChecked on VibeWeather Pro`;
+    const shareText = `🌤️ ${city} 날씨\n🌡️ ${temp} — ${desc}\n🤔 체감온도: ${feel}\n💧 습도: ${humidity}\n💨 바람: ${wind}\n\nVibeWeather Pro에서 확인했어요`;
 
     if (navigator.share) {
         await navigator.share({ title: 'VibeWeather Pro', text: shareText });
     } else {
         navigator.clipboard.writeText(shareText);
         const btn = document.getElementById('shareBtn');
-        btn.innerText = '✅ Copied to clipboard!';
-        setTimeout(() => btn.innerText = '📤 Share Weather', 2000);
+        btn.innerText = '✅ 클립보드에 복사됐어요!';
+        setTimeout(() => btn.innerText = '📤 날씨 공유하기', 2000);
     }
 };
 
