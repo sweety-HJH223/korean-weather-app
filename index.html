@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VibeWeather Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="video-container">
+    <video id="portalVideo" autoplay muted loop playsinline class="bg-video">
+        <source src="assets/images/background.mp4" type="video/mp4">
+    </video>
+    
+    <video id="bgVideo" autoplay muted loop playsinline class="bg-video hidden"></video>
+    
+    <div class="overlay-glow"></div>
+</div>
+
+    <section id="portal" class="portal-container">
+    <div class="portal-content">
+        <h1 class="brand-name">VIBE<span>WEATHER</span></h1>
+        <p class="tagline">도시를 검색해서 날씨를 확인해보세요</p>
+        
+        <div class="search-wrapper">
+            
+            <input type="text" id="cityInput" placeholder="어디 날씨가 궁금해요?" autocomplete="off">
+            <button id="searchBtn">검색</button>
+        </div>
+        <button id="geoBtn">📍 내 위치 날씨 보기</button>
+
+        <div id="prevSearch" class="history-section hidden">
+            <span>최근 검색:</span>
+            <button id="lastCity" class="history-chip">--</button>
+        </div>
+    </div>
+</section>
+
+<main id="dashboard" class="hidden">
+
+    <button id="soundBtn" style="
+  position: fixed; top: 20px; right: 20px; z-index: 999;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem;
+  cursor: pointer; backdrop-filter: blur(10px); color: white;
+">🔇</button>
+
+    <!-- WEATHER ALERT BANNER -->
+<div id="alertBanner" class="alert-banner hidden">
+    <span>⚠️</span>
+    <span id="alertText">--</span>
+</div>
+    <button id="backBtn" class="back-link">← 다른 도시 검색</button>
+
+    <div class="main-card">
+        <div class="time-vibe">
+            <h3 id="greeting">--</h3>
+            <h1 id="liveClock" style="font-size: 3.5rem; margin: 0;">00:00</h1>
+        </div>
+
+        <h2 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="assets/icons/location.gif" style="width: 60px;">
+            <span id="cityName">--</span>
+        </h2>
+        
+        <p class="date-text" id="todayDate" style="opacity: 0.6;">--</p>
+        <div class="temp-section">
+    <img id="mainWeatherIcon" src="" alt="Weather" class="main-vibe-icon">
+
+    <div class="temp-row">
+        <img id="timeIcon" src="" alt="Day/Night" class="side-time-icon">
+        <h1 id="temp">--°C</h1>
+        <div class="temp-row-spacer"></div>
+    </div>
+
+    <p id="description" style="text-transform: capitalize;">--</p>
+</div>
+
+ <div class="stat-card">
+    <p>강수 확률</p>
+    <h3 id="precipVal">100%</h3>
+    <div class="progress-container">
+        <div id="precipBarInner"></div>
+    </div>
+</div>
+
+<div class="stat-card">
+    <p>일일 기온</p>
+    <div class="temp-labels" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span id="minTemp">--°</span>
+        <span style="font-size: 0.6rem; opacity: 0.6;">예보</span>
+        <span id="maxTemp">--°</span>
+    </div>
+    <div class="temp-bar-bg" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative;">
+    
+        <div class="temp-bar-color" style="width: 100%; height: 100%; background: linear-gradient(90deg, #a5f3fc, #98ff98, #ffd89b, #ff9a9e); border-radius: 10px;"></div>
+        
+        <div id="tempMarker" style="width: 12px; height: 12px; background: white; border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px white; transition: left 1s ease-in-out;"></div>
+    </div>
+</div>
+    </div>     
+        
+<!-- 8 BOX GRID -->
+    <div class="vibe-grid">
+        <!-- Card 1 -->
+        <div class="vibe-card">
+            <div id="outfitEmoji" class="motion-float"></div>
+            <p>옷차림</p>
+            <span id="outfitVal">--</span>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="vibe-card">
+            <img src="assets/icons/wind.png">
+            <p>풍속</p>
+            <span id="windVal">-- km/h</span>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="vibe-card">
+            <div style="font-size: 30px; margin-bottom: 5px;">🌡️</div>
+            <p>체감온도</p>
+            <span id="realFeelVal" style="color: #8fd3f4;">--°C</span>
+            <p id="windStatus" style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">--</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="vibe-card">
+            <img src="assets/icons/uv.png">
+            <p>자외선</p>
+            <span id="uvVal">--</span>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="vibe-card">
+            <img src="assets/icons/humidity.gif"> 
+            <p>습도</p>
+            <span id="humidityVal">--</span>
+            <p id="humidityStatus" style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">--</p>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="vibe-card">
+            <img src="assets/icons/run.gif" id="runIcon">
+            <p>러닝</p>
+            <span id="runVal">--</span>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="vibe-card">
+            <img src="assets/icons/pollen2.gif">
+            <p>꽃가루</p>
+            <span id="pollenVal">--</span>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="vibe-card">
+            <img src="assets/icons/driving.png">
+            <p>운전</p>
+            <span id="driveVal">--</span>
+        </div>
+
+        <!-- Card 9 - AQI -->
+<div class="vibe-card">
+    <img src="assets/icons/air.png" class="vibe-icon-image" alt="Air Quality">
+    <p>대기질</p>
+    <span id="aqiVal">--</span>
+    <p id="aqiStatus" style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">--</p>
+</div>
+
+<!-- Card 10 - Visibility -->
+<div class="vibe-card">
+    <img src="assets/icons/visibility.png" class="vibe-icon-image" alt="Visibility">
+    <p>가시거리</p>
+    <span id="visVal">--</span>
+    <p id="visStatus" style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">--</p>
+</div>
+
+<!-- Card 11 - Pressure -->
+<div class="vibe-card">
+    <img src="assets/icons/pressure.png" class="vibe-icon-image" alt="Pressure">
+    <p>기압</p>
+    <span id="pressureVal">-- hPa</span>
+    <p id="pressureStatus" style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">--</p>
+</div>
+
+<div class="vibe-card" id="nextUpCard">
+    <p>다가오는 날씨</p>
+    <div id="nextUpEmoji" class="motion-float" style="font-size: 40px; margin: 10px 0;">✨</div>
+    <span id="nextUpVal" style="font-size: 0.75rem; line-height: 1.2;">확인 중...</span>
+</div>
+    </div> <!-- End of vibe-grid -->
+
+    <!-- SOLAR/MOON CONTAINER -->
+    <div class="extra-container">
+    <div class="solar-row">
+        <div class="solar-item">
+            <div id="sunriseIcon"></div>
+            <p>일출</p>
+            <span id="sunriseTime">--:--</span>
+        </div>
+
+        <div class="solar-item">
+            <div id="sunsetIcon"></div>
+            <p>일몰</p>
+            <span id="sunsetTime">--:--</span>
+        </div>
+
+        <div class="solar-item">
+            <div id="moonIcon" class="moon-vibe-animation">🌑</div>
+            <p>달의 상태</p>
+            <span id="moonPhaseText">--</span>
+        </div>
+    </div> 
+
+    <div class="forecast-section" style="margin-top: 20px; width: 100%;">
+        <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; text-align: left;">5일 예보</p>
+        <div id="forecastContainer" class="forecast-grid">
+            </div>
+    </div>
+
+    <!-- HOURLY FORECAST -->
+<div class="hourly-section" style="margin-top: 20px; width: 100%;">
+    <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; text-align: left;">시간별 예보</p>
+    <div id="hourlyContainer" class="hourly-grid"></div>
+</div>
+
+<!-- SHARE BUTTON -->
+<button id="shareBtn" class="share-btn">📤 날씨 공유하기</button>
+</div>
+</main> <!-- End of dashboard -->
+
+<audio id="bgMusic" loop></audio>
+<script src="script.js"></script>
+</body>
+</html>
+
