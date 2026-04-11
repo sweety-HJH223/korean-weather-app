@@ -130,9 +130,10 @@ function updateDynamicBackground(hour) {
 }
 
 // --- MAIN FUNCTION ---
-async function getVibe(city) {
+async function getVibe(city, originalQuery = null) {
     if (!city) return;
-  if (/[가-힣]/.test(city)) {
+    if (!originalQuery) originalQuery = city;
+    if (/[가-힣]/.test(city)) {
     try {
         // Use Kakao geocoding API to convert Korean address to coordinates
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1&accept-language=ko`);
