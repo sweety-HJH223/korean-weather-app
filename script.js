@@ -706,7 +706,7 @@ document.getElementById('geoBtn').onclick = () => {
 };
 // --- SHARE WEATHER ---
 document.getElementById('shareBtn').onclick = async () => {
-    const city = document.getElementById('cityName').innerText.replace(/^\s*\S+\s*/, '').trim();
+    const city = document.getElementById('cityName').innerText.replace(/[^\w\s,가-힣]/g, '').trim();
     const temp = document.getElementById('temp').innerText;
     const desc = document.getElementById('description').innerText;
     const feel = document.getElementById('realFeelVal').innerText;
