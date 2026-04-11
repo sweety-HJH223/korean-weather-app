@@ -148,8 +148,7 @@ async function getVibe(city) {
         const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(city)}&days=6&aqi=yes&alerts=no&lang=ko`);
         const data = await res.json();
 
-        if (data.error) return alert("City not found! Please try again.");
-
+        if (data.error) return alert(`도시를 찾을 수 없어요 😢\n("${city}" 로 검색했어요)\n다시 시도해보세요!`);
         // --- EXTRACT DATA ---
         const current = data.current;
         const location = data.location;
