@@ -138,7 +138,8 @@ async function getVibe(city) {
         .replace(/\S+[읍면동리]/g, '')
         .replace(/\S+[구군]/g, '')
         .trim()
-        .split(/\s+/)[0];
+        .split(/\s+/)[0]
+        .replace(/시$/, '');
 }
     
     try {
