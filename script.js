@@ -132,6 +132,17 @@ function updateDynamicBackground(hour) {
 // --- MAIN FUNCTION ---
 async function getVibe(city) {
     if (!city) return;
+    const hasKorean = /[가-힣]/.test(city);
+    if (hasKorean) {
+       try {
+            const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(city)}&langpair=ko|en`);
+            const transData = await transRes.json();
+            const translated = transData.responseData?.translatedText;
+            if (translated && translated !== city) city = translated;
+        } catch (e) {
+            console.log('Translation failed, trying original');
+        }
+    }
     try {
         // Add &lang=ko to the end of the URL
         const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(city)}&days=6&aqi=yes&alerts=no&lang=ko`);
