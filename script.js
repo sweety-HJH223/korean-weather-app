@@ -407,7 +407,8 @@ else                { aqiLabel = "위험한 수준이에요 꼭 주의해요 ⚫
         }
 
         // --- UI UPDATES ---
-        document.getElementById('cityName').innerHTML = `<i class="fas fa-location-arrow"></i> ${location.name}, ${location.country}`;
+        const displayCity = location.region ? `${location.name}, ${location.region}, ${location.country}` : `${location.name}, ${location.country}`;
+document.getElementById('cityName').innerHTML = `<i class="fas fa-location-arrow"></i> ${displayCity}`;
         document.getElementById('temp').innerText = Math.round(temp) + "°C";
         const conditionMap = {
     "Sunny": "맑음", "Clear": "맑음", "Partly cloudy": "구름 조금", "Cloudy": "흐림",
