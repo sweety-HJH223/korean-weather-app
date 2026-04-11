@@ -451,7 +451,10 @@ else                { aqiLabel = "위험한 수준이에요 꼭 주의해요 ⚫
         }
 
         // --- UI UPDATES ---
-        const displayCity = location.region ? `${location.name}, ${location.region}, ${location.country}` : `${location.name}, ${location.country}`;
+        const isKoreanSearch = /[가-힣]/.test(originalQuery);
+const displayCity = isKoreanSearch
+    ? originalQuery
+    : (location.region ? `${location.name}, ${location.region}, ${location.country}` : `${location.name}, ${location.country}`);
 document.getElementById('cityName').innerHTML = `<i class="fas fa-location-arrow"></i> ${displayCity}`;
         document.getElementById('temp').innerText = Math.round(temp) + "°C";
         const conditionMap = {
