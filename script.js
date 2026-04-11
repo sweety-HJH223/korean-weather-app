@@ -147,7 +147,29 @@ async function getVibe(city) {
         const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(city)}&days=6&aqi=yes&alerts=no&lang=ko`);
         const data = await res.json();
 
-        if (data.error) return alert(`도시를 찾을 수 없어요 😢\n("${city}" 로 검색했어요)\n다시 시도해보세요!`);
+       if (data.error) {
+    // fallback map for cities WeatherAPI doesn't know
+    const fallback = {
+        "남양주": "Guri", "하남": "Hanam", "구리": "Guri",
+        "양주": "Uijeongbu", "동두천": "Uijeongbu", "연천": "Uijeongbu",
+        "가평": "Chuncheon", "양평": "Yeoju", "여주": "Yeoju",
+        "진천": "Cheongju", "음성": "Cheongju", "증평": "Cheongju",
+        "고창": "Jeonju", "부안": "Jeonju", "임실": "Jeonju",
+        "함평": "Mokpo", "신안": "Mokpo", "진도": "Mokpo",
+        "울릉": "Pohang", "봉화": "Andong", "영양": "Andong",
+        "청송": "Andong", "영덕": "Pohang", "고령": "Daegu",
+        "성주": "Daegu", "칠곡": "Daegu", "의령": "Jinju",
+        "함안": "Changwon", "창녕": "Changwon", "남해": "Jinju",
+        "하동": "Jinju", "산청": "Jinju", "거창": "Jinju",
+        "합천": "Jinju",
+    };
+    const nearby = fallback[city];
+    if (nearby) {
+        console.log(`Falling back to nearby city: ${nearby}`);
+        return getVibe(nearby);
+    }
+    return alert(`도시를 찾을 수 없어요 😢\n서울, 부산, 수원 같은 큰 도시명으로 검색해보세요!`);
+}
         // --- EXTRACT DATA ---
         const current = data.current;
         const location = data.location;
