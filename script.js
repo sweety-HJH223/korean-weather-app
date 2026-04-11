@@ -132,17 +132,15 @@ function updateDynamicBackground(hour) {
 // --- MAIN FUNCTION ---
 async function getVibe(city) {
     if (!city) return;
-    const hasKorean = /[가-힣]/.test(city);
-    if (hasKorean) {
-       try {
-            const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(city)}&langpair=ko|en`);
-            const transData = await transRes.json();
-            const translated = transData.responseData?.translatedText;
-            if (translated && translated !== city) city = translated;
-        } catch (e) {
-            console.log('Translation failed, trying original');
-        }
-    }
+  if (/[가-힣]/.test(city)) {
+    city = city
+        .replace(/(특별시|광역시|특별자치시|특별자치도|경기도|강원도|충청북도|충청남도|전라북도|전라남도|경상북도|경상남도|제주도)/g, '')
+        .replace(/\S+[읍면동리]/g, '')
+        .replace(/\S+[구군]/g, '')
+        .trim()
+        .split(/\s+/)[0];
+}
+    
     try {
         // Add &lang=ko to the end of the URL
         const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(city)}&days=6&aqi=yes&alerts=no&lang=ko`);
