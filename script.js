@@ -173,7 +173,7 @@ async function getVibe(city, originalQuery = null) {
     const nearby = fallback[city];
     if (nearby) {
         console.log(`Falling back to nearby city: ${nearby}`);
-        return getVibe(nearby);
+        return getVibe(nearby, originalQuery);
     }
     return alert(`도시를 찾을 수 없어요 😢\n서울, 부산, 수원 같은 큰 도시명으로 검색해보세요!`);
 }
@@ -334,21 +334,8 @@ const moonData = moonMap[moonPhaseRaw] || { emoji: "🌑", korean: moonPhaseRaw 
 const moonEmoji = moonData.emoji;
 const phaseName = moonData.korean;
 
-        // --- OUTFIT ---
-        let outfit = "편하게 입어도 괜찮아요", emo = "👕", mot = "motion-float";
-        if (conditionCode >= 1087 && conditionCode <= 1282 && conditionText.toLowerCase().includes("thunder")) {
-            outfit = "오늘은 밖에 나가지 않는 게 좋아요!"; emo = "⚡"; mot = "motion-storm";
-        } else if (conditionCode >= 1180 && conditionCode <= 1282) {
-            outfit = "비가 와요 우산 꼭 챙겨요"; emo = "☔"; mot = "motion-rain";
-        } else if (temp < 12) {
-            outfit = "쌀쌀해요 따뜻하게 입어요"; emo = "🧥"; mot = "motion-shiver";
-        } else if (temp > 28) {
-            outfit = "더워요 가볍게 입는 게 좋아요"; emo = "🩳"; mot = "motion-bounce";
-        }
-
-        // --- GIF ICON ---
-        const isRain = conditionCode >= 1180 && conditionCode <= 1201;
-        const isDrizzle = conditionCode >= 1150 && conditionCode <= 1171;
+       const isRain = conditionCode >= 1180 && conditionCode <= 1201 || conditionCode === 1063;
+        const isDrizzle = conditionCode >= 1150 && conditionCode <= 1171 || conditionCode === 1072;
         const isSnow = conditionCode >= 1210 && conditionCode <= 1282 && !conditionText.toLowerCase().includes("thunder");
         const isThunder = conditionCode === 1087 || (conditionCode >= 1273 && conditionCode <= 1282);
         const isSleet = conditionCode >= 1204 && conditionCode <= 1207;
@@ -357,6 +344,18 @@ const phaseName = moonData.korean;
         const isBlizzard = conditionCode === 1117;
         const isOvercast = conditionCode === 1009;
         const isCloudy = conditionCode >= 1003 && conditionCode <= 1030;
+
+        // --- OUTFIT ---
+        let outfit = "편하게 입어도 괜찮아요", emo = "👕", mot = "motion-float";
+        if (conditionCode >= 1087 && conditionCode <= 1282 && conditionText.toLowerCase().includes("thunder")) {
+            outfit = "오늘은 밖에 나가지 않는 게 좋아요!"; emo = "⚡"; mot = "motion-storm";
+        } else if ((isRain || isDrizzle) || (conditionCode >= 1180 && conditionCode <= 1282)) {
+            outfit = "비가 와요 우산 꼭 챙겨요"; emo = "☔"; mot = "motion-rain";
+        } else if (temp < 12) {
+            outfit = "쌀쌀해요 따뜻하게 입어요"; emo = "🧥"; mot = "motion-shiver";
+        } else if (temp > 28) {
+            outfit = "더워요 가볍게 입는 게 좋아요"; emo = "🩳"; mot = "motion-bounce";
+        }
 
         let gif;
         if (isThunder) gif = "Strom.gif";
@@ -589,7 +588,6 @@ document.getElementById('uvVal').innerText = uvLabel;
         
         // Final Transitions
         updateDynamicBackground(localHour);
-        if (clockInterval) clearInterval(clockInterval);
         clockInterval = updateLiveClock(tzId, temp);
 
         document.getElementById('portal').classList.add('hidden');
