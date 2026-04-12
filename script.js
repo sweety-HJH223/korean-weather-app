@@ -135,23 +135,17 @@ async function getVibe(city, originalQuery = null) {
     if (!originalQuery) originalQuery = city;
     if (/[가-힣]/.test(city)) {
     try {
-        // Use Kakao geocoding API to convert Korean address to coordinates
-        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1&accept-language=ko`);
+        const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`
+        );
         const geoData = await geoRes.json();
         if (geoData && geoData[0]) {
             city = `${geoData[0].lat},${geoData[0].lon}`;
         } else {
-            // fallback — strip to city name
-            city = city
-                .replace(/(특별시|광역시|특별자치시|특별자치도|경기도|강원도|충청북도|충청남도|전라북도|전라남도|경상북도|경상남도|제주도)/g, '')
-                .replace(/\S+[읍면동리]/g, '')
-                .replace(/\S+[구군]/g, '')
-                .trim()
-                .split(/\s+/)[0]
-                .replace(/시$/, '');
+            return alert(`도시를 찾을 수 없어요 😢\n서울, 부산, 수원 같은 큰 도시명으로 검색해보세요!`);
         }
     } catch (e) {
-        console.log('Geocoding failed, trying direct');
+        return alert(`도시를 찾을 수 없어요 😢`);
     }
 }
     
@@ -479,8 +473,8 @@ document.getElementById('cityName').innerHTML = `<i class="fas fa-location-arrow
     "Patchy light snow with thunder": "천둥 동반 가벼운 눈",
     "Moderate or heavy snow with thunder": "천둥 동반 강한 눈",
 };
-       
-        document.getElementById('description').innerText = current.condition.text;
+        document.getElementById('description').innerText = conditionMap[conditionText] || conditionText;
+        document.getElementById('todayDate').innerText = localDate.toLocaleDateString('ko-KR', options);
         document.getElementById('realFeelVal').innerText = `${realFeel.toFixed(1)}°C`;
         const realFeelCard = document.querySelector('#realFeelVal').closest('.vibe-card').querySelector('div');
 let realFeelEmoji, realFeelMotion;
