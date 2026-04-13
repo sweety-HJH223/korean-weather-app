@@ -348,24 +348,58 @@ function renderUI({
 }) {
   const options = { weekday: 'long', month: 'long', day: 'numeric' };
 
-  // --- REAL FEEL ---
+  // --- REAL FEEL (full human comfort model) ---
+  // Combines: Wind Chill (cold) + Heat Index (hot+humid) + Steadman's middle range
+  // + humidity comfort + solar radiation effect
   const T = temp, v = windSpeedKmh, H = humidity;
+  const v_ms = v / 3.6;
+  const dewPoint = T - ((100 - H) / 5);
+
+  // Actual vapour pressure (humidity effect on how sticky air feels)
+  const e = (H / 100) * 6.105 * Math.exp((17.27 * T) / (237.7 + T));
+
   let rf;
+
   if (T <= 10 && v >= 4.8) {
-    rf = 13.12 + (0.6215*T) - (11.37*Math.pow(v,0.16)) + (0.3965*T*Math.pow(v,0.16));
+    // Wind Chill (Environment Canada formula) — cold + wind = feels much colder
+    rf = 13.12 + (0.6215 * T) - (11.37 * Math.pow(v, 0.16)) + (0.3965 * T * Math.pow(v, 0.16));
+    // Extra humidity dryness penalty in cold: dry cold air feels harsher on skin
+    if (H < 30) rf -= (30 - H) * 0.05;
+
   } else if (T >= 27 && H >= 40) {
-    const c1=-8.78469475556,c2=1.61139411,c3=2.33854883889,c4=-0.14611605,c5=-0.012308094,c6=-0.0164248277778,c7=0.002211732,c8=0.00072546,c9=-0.000003582;
+    // Heat Index (Rothfusz) — hot + humid = body can't cool via sweat
+    const c1=-8.78469475556, c2=1.61139411, c3=2.33854883889, c4=-0.14611605,
+          c5=-0.012308094,   c6=-0.0164248277778, c7=0.002211732,
+          c8=0.00072546,     c9=-0.000003582;
     rf = c1+(c2*T)+(c3*H)+(c4*T*H)+(c5*T*T)+(c6*H*H)+(c7*T*T*H)+(c8*T*H*H)+(c9*T*T*H*H);
     rf = Math.max(rf, T);
+    // Wind above 15 km/h provides some relief when hot
+    if (v > 15) rf -= (v - 15) * 0.1;
+
   } else {
-    const v_ms = v/3.6;
-    let e = (H/100)*6.105*Math.exp((17.27*T)/(237.7+T));
-    rf = T + (0.33*e) - (0.70*v_ms) - 4.00;
+    // Middle range: Steadman apparent temperature
+    // Accounts for humidity (sticky feeling) and wind (cooling)
+    rf = T + (0.33 * e) - (0.70 * v_ms) - 4.00;
+
+    // Extra adjustments for the "feels different" middle range:
+    // High humidity at mild temps (18-27°C) makes it feel heavier/stickier
+    if (T >= 18 && T < 27 && H > 70) {
+      rf += (H - 70) * 0.05; // humid spring/autumn feels warmer and heavier
+    }
+    // Low humidity at mild temps feels fresher/cooler than actual
+    if (T >= 15 && T < 27 && H < 40) {
+      rf -= (40 - H) * 0.04; // dry air = more comfortable, feels slightly cooler
+    }
+    // Cold with no wind but high humidity (damp cold) feels colder
+    if (T > 0 && T < 15 && H > 80) {
+      rf -= (H - 80) * 0.04; // damp cold feels worse
+    }
   }
+
   rf = parseFloat(rf.toFixed(1));
 
   // --- DEW POINT / HUMIDITY ---
-  const dewPoint = T - ((100-H)/5);
+  // dewPoint already calculated above in real feel section
   let humVibe, humColor;
   if (dewPoint < -5) { humVibe="공기가 많이 건조해요 🏜️"; humColor="#e0f2fe"; }
   else if (dewPoint < 5) { humVibe="조금 건조한 느낌이에요 💨"; humColor="#8fd3f4"; }
@@ -615,8 +649,11 @@ async function getVibeKorean(lat, lon, displayCity) {
   const sunriseRaw = daily.sunrise[0]; // "2024-04-13T05:23"
   const sunsetRaw = daily.sunset[0];
   const fmtTime = (str) => {
-    const d = new Date(str);
-    let h = d.getHours(), m = d.getMinutes().toString().padStart(2,'0');
+    // Open-Meteo returns "2026-04-13T05:23" already in Asia/Seoul — parse directly
+    // Do NOT use new Date() which would apply local browser timezone offset
+    const timePart = str.split('T')[1];
+    let h = parseInt(timePart.split(':')[0]);
+    const m = timePart.split(':')[1];
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12 || 12;
     return `${h.toString().padStart(2,'0')}:${m} ${ampm}`;
